@@ -11,7 +11,10 @@ const client = axios.create({
 
 export const dataApi = {
   getSymbols: () => client.get('/data/symbols'),
-  searchSymbols: (q) => client.get(`/data/symbols/search?q=${q}`),
+  getRegistry: (limit = 100, offset = 0) =>
+    client.get('/data/symbols/registry', { params: { limit, offset } }),
+  searchSymbols: (q, limit = 100) =>
+    client.get('/data/symbols/search', { params: { q, limit } }),
   downloadData: (symbol, start, end, interval = '1d') =>
     client.post('/data/download', { symbol, start_date: start, end_date: end, interval }),
   loadData: (symbol, start, end, interval = '1d') =>

@@ -17,26 +17,75 @@ class DownloadRequest(BaseModel):
     interval: str = "1d"
 
 
+def _clamp_limit(limit: int, default: int = 100, maximum: int = 500) -> int:
+    if limit <= 0:
+        return default
+    return min(limit, maximum)
+
+
 @router.get("/symbols")
 def get_symbols():
-    """List default tickers and available (downloaded) symbols."""
-    available = DataService.get_available_symbols()
-    return {"default_tickers": DEFAULT_TICKERS, "available": available}
+    """List default tickers, downloaded symbols, and registry size."""
+    storage_status = "ok"
+    try:
+        available = DataService.get_available_symbols()
+    except Exception:
+        available = []
+        storage_status = "unavailable"
+    registry = get_ticker_registry()
+    return {
+        "default_tickers": DEFAULT_TICKERS,
+        "available": available,
+        "registry_count": len(registry),
+        "storage_status": storage_status,
+    }
+
+
+@router.get("/symbols/registry")
+def get_symbol_registry(limit: int = 100, offset: int = 0):
+    """Return a paginated slice of all SEC tickers from company_tickers.json."""
+    registry = get_ticker_registry()
+    items = [{"ticker": ticker, "name": name} for ticker, name in registry.items()]
+    safe_limit = _clamp_limit(limit)
+    safe_offset = max(offset, 0)
+    return {
+        "total": len(items),
+        "limit": safe_limit,
+        "offset": safe_offset,
+        "results": items[safe_offset:safe_offset + safe_limit],
+    }
 
 
 @router.get("/symbols/search")
-def search_symbols(q: str = ""):
+def search_symbols(q: str = "", limit: int = 100):
     """Search tickers from the SEC registry."""
-    if not q or len(q) < 1:
-        return {"results": []}
     registry = get_ticker_registry()
+    safe_limit = _clamp_limit(limit)
+    if not q or len(q) < 1:
+        preview = [{"ticker": ticker, "name": name} for ticker, name in list(registry.items())[:safe_limit]]
+        return {"query": q, "total_matches": len(registry), "results": preview}
+
     q_upper = q.upper()
-    results = [
-        {"ticker": ticker, "name": name}
-        for ticker, name in registry.items()
-        if q_upper in ticker or q_upper in name.upper()
-    ][:50]
-    return {"results": results}
+    matches = []
+    for ticker, name in registry.items():
+        name_upper = name.upper()
+        if q_upper not in ticker and q_upper not in name_upper:
+            continue
+        if ticker == q_upper:
+            score = 0
+        elif ticker.startswith(q_upper):
+            score = 1
+        elif name_upper.startswith(q_upper):
+            score = 2
+        elif q_upper in ticker:
+            score = 3
+        else:
+            score = 4
+        matches.append((score, ticker, name))
+
+    matches.sort(key=lambda item: (item[0], item[1]))
+    results = [{"ticker": ticker, "name": name} for _, ticker, name in matches[:safe_limit]]
+    return {"query": q, "total_matches": len(matches), "results": results}
 
 
 @router.post("/download")

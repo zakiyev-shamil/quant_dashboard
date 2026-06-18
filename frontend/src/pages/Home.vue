@@ -14,8 +14,8 @@
     <div class="grid-3 mb-24">
       <div class="card">
         <p class="metric-label">Registered SEC Tickers</p>
-        <p class="metric-value">10,000+</p>
-        <span class="badge badge-success" style="margin-top: 8px;">Fully Searchable</span>
+        <p class="metric-value">{{ formatNumber(registryCount) }}</p>
+        <router-link to="/data-manager" class="badge badge-success" style="margin-top: 8px;">Browse Universe</router-link>
       </div>
       <div class="card">
         <p class="metric-label">Local Database Engine</p>
@@ -115,10 +115,13 @@ export default {
     const statuses = ref({});
     const loading = ref({});
     const rfRate = ref(0.05); // default configuration
+    const registryCount = ref(0);
 
     const loadStatuses = async () => {
       try {
         const res = await dataApi.getSymbols();
+        registryCount.value = res.data.registry_count || 0;
+        defaultTickers.value = res.data.default_tickers || defaultTickers.value;
         if (res.data && res.data.available) {
           for (const sym of defaultTickers.value) {
             try {
@@ -134,6 +137,10 @@ export default {
       } catch (err) {
         console.error('Error fetching statuses', err);
       }
+    };
+
+    const formatNumber = (value) => {
+      return new Intl.NumberFormat('en-US').format(value || 0);
     };
 
     const downloadTicker = async (ticker) => {
@@ -158,6 +165,8 @@ export default {
       statuses,
       loading,
       rfRate,
+      registryCount,
+      formatNumber,
       downloadTicker,
     };
   },

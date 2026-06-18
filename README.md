@@ -17,6 +17,7 @@ QuantLab Lite - это full-stack dashboard для quantitative finance.
 ## Что умеет проект
 
 1. Data Manager
+   - делает доступными все tickers из `company_tickers.json`
    - ищет tickers по SEC registry
    - загружает OHLCV prices через yfinance
    - сохраняет данные в PostgreSQL

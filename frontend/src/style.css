@@ -157,6 +157,11 @@ a:hover {
   gap: 24px;
 }
 
+.compact-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
 /* Forms & Inputs */
 .form-group {
   display: flex;
@@ -332,6 +337,107 @@ tr:hover td {
 }
 .negative-text {
   color: var(--accent-danger);
+}
+
+.muted-text {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ticker-search-row {
+  display: flex;
+  gap: 12px;
+}
+
+.ticker-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ticker-chip {
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  background-color: rgba(6, 182, 212, 0.08);
+  color: var(--accent-secondary);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 12px;
+  transition: all 0.2s ease;
+}
+
+.ticker-chip:hover {
+  background-color: rgba(6, 182, 212, 0.16);
+  border-color: var(--accent-secondary);
+  color: var(--text-primary);
+}
+
+.ticker-results,
+.local-db-table {
+  max-height: 470px;
+  overflow-y: auto;
+}
+
+.selected-row td {
+  background-color: rgba(6, 182, 212, 0.08);
+}
+
+.ticker-symbol {
+  color: var(--text-primary);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.selected-ticker-panel {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.16), rgba(6, 182, 212, 0.08));
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  border-radius: var(--border-radius);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+}
+
+.selected-ticker {
+  color: var(--text-primary);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.status-panel {
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 16px;
+  padding: 12px 14px;
+}
+
+.success-panel {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: var(--accent-success);
+}
+
+.error-panel {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: var(--accent-danger);
+}
+
+.local-heading {
+  border-top: 1px solid var(--border-color);
+  margin-top: 28px;
+  padding-top: 24px;
 }
 .loader {
   border: 4px solid var(--border-color);
